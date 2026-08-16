@@ -53,33 +53,65 @@
   </div>
 	<audio id="background-audio" src="audio.mp3" preload="auto"></audio>
 <script>
-  function tick(){
-    var p=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
-    var h=p.find(function(x){return x.type==='hour';}).value;
-    var m=p.find(function(x){return x.type==='minute';}).value;
-    document.getElementById('t').innerHTML=h+'<span class="colon">:</span>'+m;
+  function tick() {
+    var p = new Intl.DateTimeFormat('it-IT', {
+      timeZone: 'Europe/Rome',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).formatToParts(new Date());
+
+    var h = p.find(function(x) {
+      return x.type === 'hour';
+    }).value;
+
+    var m = p.find(function(x) {
+      return x.type === 'minute';
+    }).value;
+
+    document.getElementById('t').innerHTML =
+      h + '<span class="colon">:</span>' + m;
   }
-	var audio = document.getElementById('background-audio');
-var played = false;
 
-function playAudioOnce() {
-    if (!played) {
-        audio.play().then(function() {
-            played = true;
-        }).catch(function(e) {
-            // se bloccato, si riproverà al click
-        });
-    }
-}
+  // =========================
+  // AUDIO
+  // =========================
 
-// Tentativo di riproduzione automatica
-playAudioOnce();
+  var audio = document.getElementById('background-audio');
+  var played = false;
 
-// Se fallisce, si riprova al primo click/tocco
-document.addEventListener('click', playAudioOnce);
-document.addEventListener('touchstart', playAudioOnce);
+  function playAudio() {
+    if (played) return;
+
+    audio.play()
+      .then(function() {
+        played = true;
+        console.log('Audio avviato');
+      })
+      .catch(function(error) {
+        console.log('Autoplay bloccato dal browser:', error);
+      });
+  }
+
+  // Prova ad avviare automaticamente
+  playAudio();
+
+  // Se il browser blocca l'autoplay,
+  // parte al primo click/tocco dell'utente
+  document.addEventListener('click', playAudio, { once: true });
+  document.addEventListener('touchstart', playAudio, { once: true });
+
+
+  // =========================
+  // OROLOGIO
+  // =========================
+
   tick();
-  setTimeout(function(){tick();setInterval(tick,1000);},1000-new Date().getMilliseconds());
+
+  setTimeout(function() {
+    tick();
+    setInterval(tick, 1000);
+  }, 1000 - new Date().getMilliseconds());
 </script>
 </body>
 </html>
