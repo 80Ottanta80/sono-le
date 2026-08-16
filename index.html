@@ -51,6 +51,7 @@
   <div class="clock-pill">
     <span id="t">--<span class="colon">:</span>--</span>
   </div>
+	<audio id="background-audio" src="audio.mp3" preload="auto"></audio>
 <script>
   function tick(){
     var p=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
@@ -58,6 +59,25 @@
     var m=p.find(function(x){return x.type==='minute';}).value;
     document.getElementById('t').innerHTML=h+'<span class="colon">:</span>'+m;
   }
+	var audio = document.getElementById('background-audio');
+var played = false;
+
+function playAudioOnce() {
+    if (!played) {
+        audio.play().then(function() {
+            played = true;
+        }).catch(function(e) {
+            // se bloccato, si riproverà al click
+        });
+    }
+}
+
+// Tentativo di riproduzione automatica
+playAudioOnce();
+
+// Se fallisce, si riprova al primo click/tocco
+document.addEventListener('click', playAudioOnce);
+document.addEventListener('touchstart', playAudioOnce);
   tick();
   setTimeout(function(){tick();setInterval(tick,1000);},1000-new Date().getMilliseconds());
 </script>
